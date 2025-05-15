@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../contexts/AuthContext';
 import api from '../utils/api';
@@ -8,8 +8,7 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { login, user } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +27,6 @@ function Login() {
         className: 'toast-success',
         autoClose: 3000,
       });
-      navigate('/blogs');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed', {
         className: 'toast-error',
@@ -36,6 +34,12 @@ function Login() {
       });
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      window.location.href = '/blogs';
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">

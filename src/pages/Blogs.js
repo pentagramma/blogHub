@@ -8,6 +8,7 @@ function Blogs() {
   const [category, setCategory] = useState('');
   const [author, setAuthor] = useState('');
   const [debouncedAuthor, setDebouncedAuthor] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const categories = ['Career', 'Finance', 'Travel', 'Technology', 'Health', 'Other'];
 
@@ -24,13 +25,19 @@ function Blogs() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
+        setLoading(true);
         const params = {};
         if (category) params.category = category;
         if (debouncedAuthor) params.author = debouncedAuthor;
         const res = await api.get('/blogs', { params });
         setBlogs(res.data.data);
       } catch (err) {
-        toast.error(err.response?.data?.message || 'Failed to fetch blogs');
+        toast.error(err.response?.data?.message || 'Failed to fetch blogs', {
+          className: 'toast-error',
+          autoClose: 3000,
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -75,7 +82,12 @@ function Blogs() {
           />
         </div>
       </div>
-      {blogs.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600 text-lg mt-4">Loading blogs...</p>
+        </div>
+      ) : blogs.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl shadow-lg">
           <p className="text-gray-600 text-lg">No blogs found.</p>
         </div>
