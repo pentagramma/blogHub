@@ -7,22 +7,33 @@ import api from '../utils/api';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitted(true);
     if (!email || !password) {
-      toast.error('Please fill in all required fields');
+      toast.error('Please fill in all required fields', {
+        className: 'toast-error',
+        autoClose: 3000,
+      });
       return;
     }
     try {
       const res = await api.post('/auth/login', { email, password });
       login(res.data.token, res.data.user);
-      toast.success('Logged in successfully!');
+      toast.success('Logged in successfully!', {
+        className: 'toast-success',
+        autoClose: 3000,
+      });
       navigate('/blogs');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      toast.error(err.response?.data?.message || 'Login failed', {
+        className: 'toast-error',
+        autoClose: 3000,
+      });
     }
   };
 
@@ -48,13 +59,13 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${
-                !email && email !== '' ? 'border-red-500' : 'border-gray-300'
+                submitted && !email ? 'border-red-500' : 'border-gray-300'
               }`}
               required
               aria-required="true"
               aria-label="Email address"
             />
-            {!email && email !== '' && (
+            {submitted && !email && (
               <p className="text-red-500 text-sm mt-1">Email is required</p>
             )}
           </div>
@@ -69,13 +80,13 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className={`w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${
-                !password && password !== '' ? 'border-red-500' : 'border-gray-300'
+                submitted && !password ? 'border-red-500' : 'border-gray-300'
               }`}
               required
               aria-required="true"
               aria-label="Password"
             />
-            {!password && password !== '' && (
+            {submitted && !password && (
               <p className="text-red-500 text-sm mt-1">Password is required</p>
             )}
           </div>

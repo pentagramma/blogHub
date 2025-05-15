@@ -10,6 +10,11 @@ import CreateBlog from './pages/CreateBlog';
 import EditBlog from './pages/EditBlog';
 import MyBlogs from './pages/MyBlogs';
 
+function AuthRedirect({ children }) {
+  const token = localStorage.getItem('token');
+  return token ? <Navigate to="/blogs" replace /> : children;
+}
+
 function App() {
   const location = useLocation();
   const showNavbar = !['/login', '/signup'].includes(location.pathname);
@@ -20,8 +25,22 @@ function App() {
       <div className={showNavbar ? 'pt-16' : ''}>
         {/* <ToastContainer position="top-right" autoClose={3000} /> */}
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/login"
+            element={
+              <AuthRedirect>
+                <Login />
+              </AuthRedirect>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <AuthRedirect>
+                <Signup />
+              </AuthRedirect>
+            }
+          />
           <Route
             path="/blogs"
             element={
@@ -54,7 +73,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route
+            path="/"
+            element={
+              localStorage.getItem('token') ? (
+                <Navigate to="/blogs" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
         </Routes>
       </div>
     </div>
